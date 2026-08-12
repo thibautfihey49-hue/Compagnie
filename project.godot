@@ -8,12 +8,6 @@ value="Compagnie3D"
 [application/config/features]
 value=PackedStringArray("3d")
 
-[application/config/package_name]
-value="fr.compagnie3d.app"
-
-[application/config/version]
-value="1.0.0"
-
 [application/run/low_processor_mode]
 value=true
 
