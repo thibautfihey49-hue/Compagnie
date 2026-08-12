@@ -1,22 +1,26 @@
 extends Control
 
-var pet_ref = null
+var pet_ref: Node3D
 @onready var hbar = $Stats/Health
 @onready var gbar = $Stats/Hunger
 @onready var ebar = $Stats/Energy
 @onready var hpbar = $Stats/Happiness
 @onready var feed = $Btns/Feed
 @onready var play = $Btns/Play
-@onready var sleep = $Btns/Sleep
+@onready var sleep_btn = $Btns/Sleep
 @onready var clean = $Btns/Clean
 @onready var heal = $Btns/Heal
 
 func _ready():
-	feed.pressed.connect(func(): pet_ref.feed())
-	play.pressed.connect(func(): pet_ref.play())
-	sleep.pressed.connect(func(): pet_ref.sleep_toggle())
-	clean.pressed.connect(func(): pet_ref.clean())
-	heal.pressed.connect(func(): pet_ref.heal())
+	# Trouver le Pet dans la scène
+	await get_tree().process_frame
+	pet_ref = get_node_or_null("/root/Root/MainWorld/PetContainer/Pet")
+	if pet_ref:
+		feed.pressed.connect(func(): pet_ref.feed())
+		play.pressed.connect(func(): pet_ref.play())
+		sleep_btn.pressed.connect(func(): pet_ref.sleep_toggle())
+		clean.pressed.connect(func(): pet_ref.clean())
+		heal.pressed.connect(func(): pet_ref.heal())
 
 func _process(delta):
 	if pet_ref:

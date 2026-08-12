@@ -1,11 +1,8 @@
 extends Node3D
 
-@onready var pet_scene = preload("res://scenes/Pet.tscn")
-var pet = null
+@onready var pet_container = $PetContainer
 
 func _ready():
-	pet = $Pet
-	pet.instantiate()
-	add_child(pet_scene.instance())
-	pet = get_node("Pet/Pet")
-	$UI.pet_ref = pet
+	var pet_scene = preload("res://scenes/Pet.tscn")
+	var pet_instance = pet_scene.instantiate()
+	pet_container.add_child(pet_instance)

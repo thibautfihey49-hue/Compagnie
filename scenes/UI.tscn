@@ -1,34 +1,88 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://ui3d123"]
+
 [ext_resource type="Script" path="res://scripts/ui.gd" id="ui"]
 
 [node name="UI" type="Control"]
-script=ExtResource("ui")
-anchors_preset=15
-anchor_right=1.0
-anchor_bottom=1.0
+script = ExtResource("ui")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 
 [node name="Stats" type="Panel" parent="."]
-offset_left=20; offset_top=20; offset_right=320; offset_bottom=280
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 320.0
+offset_bottom = 280.0
 
 [node name="Health" type="ProgressBar" parent="Stats"]
-offset_left=20; offset_top=20; offset_right=280; offset_bottom=50; max_value=100; value=100
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 280.0
+offset_bottom = 50.0
+max_value = 100.0
+value = 100.0
+
 [node name="Hunger" type="ProgressBar" parent="Stats"]
-offset_left=20; offset_top=60; offset_right=280; offset_bottom=90; max_value=100; value=80
+offset_left = 20.0
+offset_top = 60.0
+offset_right = 280.0
+offset_bottom = 90.0
+max_value = 100.0
+value = 80.0
+
 [node name="Energy" type="ProgressBar" parent="Stats"]
-offset_left=20; offset_top=100; offset_right=280; offset_bottom=130; max_value=100; value=100
+offset_left = 20.0
+offset_top = 100.0
+offset_right = 280.0
+offset_bottom = 130.0
+max_value = 100.0
+value = 100.0
+
 [node name="Happiness" type="ProgressBar" parent="Stats"]
-offset_left=20; offset_top=140; offset_right=280; offset_bottom=170; max_value=100; value=100
+offset_left = 20.0
+offset_top = 140.0
+offset_right = 280.0
+offset_bottom = 170.0
+max_value = 100.0
+value = 100.0
 
 [node name="Btns" type="Panel" parent="."]
-offset_left=20; offset_top=320; offset_right=680; offset_bottom=440
+offset_left = 20.0
+offset_top = 320.0
+offset_right = 680.0
+offset_bottom = 440.0
 
 [node name="Feed" type="Button" parent="Btns"]
-offset_left=20; offset_top=20; offset_right=140; offset_bottom=100; text="🍖 Manger"
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 140.0
+offset_bottom = 100.0
+text = "🍖 Manger"
+
 [node name="Play" type="Button" parent="Btns"]
-offset_left=160; offset_top=20; offset_right=280; offset_bottom=100; text="🎮 Jouer"
+offset_left = 160.0
+offset_top = 20.0
+offset_right = 280.0
+offset_bottom = 100.0
+text = "🎮 Jouer"
+
 [node name="Sleep" type="Button" parent="Btns"]
-offset_left=300; offset_top=20; offset_right=420; offset_bottom=100; text="😴 Dormir"
+offset_left = 300.0
+offset_top = 20.0
+offset_right = 420.0
+offset_bottom = 100.0
+text = "😴 Dormir"
+
 [node name="Clean" type="Button" parent="Btns"]
-offset_left=20; offset_top=110; offset_right=200; offset_bottom=180; text="🧼 Nettoyer"
+offset_left = 20.0
+offset_top = 110.0
+offset_right = 200.0
+offset_bottom = 180.0
+text = "🧼 Nettoyer"
+
 [node name="Heal" type="Button" parent="Btns"]
-offset_left=220; offset_top=110; offset_right=400; offset_bottom=180; text="💊 Soigner"
+offset_left = 220.0
+offset_top = 110.0
+offset_right = 400.0
+offset_bottom = 180.0
+text = "💊 Soigner"

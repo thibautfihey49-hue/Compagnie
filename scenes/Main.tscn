@@ -1,7 +1,13 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=3 format=3 uid="uid://rootscene"]
+
 [ext_resource type="PackedScene" path="res://scenes/MainWorld.tscn" id="world"]
 [ext_resource type="PackedScene" path="res://scenes/UI.tscn" id="ui"]
+[ext_resource type="PackedScene" path="res://scenes/Pet.tscn" id="pet"]
 
 [node name="Root" type="Node"]
-[node name="MainWorld" parent="." instance=ExtResource("world")]
-[node name="UI" parent="." instance=ExtResource("ui")]
+
+[node name="MainWorld" type="Node3D" parent="." instance=ExtResource("world")]
+
+[node name="UI" type="Control" parent="." instance=ExtResource("ui")]
+
+[node name="Pet" type="Node3D" parent="MainWorld/PetContainer" instance=ExtResource("pet")]

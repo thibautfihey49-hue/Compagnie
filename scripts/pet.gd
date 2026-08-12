@@ -7,7 +7,7 @@ var energy = 100
 var happiness = 100
 var hygiene = 100
 var age_in_minutes = 0
-var birth_time = OS.get_ticks_msec() / 60000.0
+var birth_time: float
 
 # 🐱 État
 var is_sleeping = false
@@ -26,6 +26,7 @@ var stages = {
 var timer = Timer.new()
 
 func _ready():
+	birth_time = Time.get_ticks_msec() / 60000.0
 	add_child(timer)
 	timer.wait_time = 1.0
 	timer.timeout.connect(_update)
@@ -68,7 +69,7 @@ func heal():
 # ⏳ Mise à jour
 func _update():
 	if is_dead: return
-	age_in_minutes = int((OS.get_ticks_msec()/60000.0) - birth_time)
+	age_in_minutes = int((Time.get_ticks_msec() / 60000.0) - birth_time)
 	
 	if is_sleeping:
 		energy = min(100, energy + 1)
@@ -80,7 +81,7 @@ func _update():
 		happiness = max(0, happiness - 1)
 		hygiene = max(0, hygiene - 1)
 	
-	health = int((hunger+energy+happiness+hygiene)/4)
+	health = int((hunger + energy + happiness + hygiene) / 4)
 	
 	if health < 5:
 		is_dead = true
@@ -93,7 +94,8 @@ func _update():
 func _evolve():
 	var s = "EGG"
 	for k in stages:
-		if age_in_minutes >= stages[k]["min"]: s = k
+		if age_in_minutes >= stages[k]["min"]:
+			s = k
 	if s != current_stage:
 		current_stage = s
 		_anim_evolve()
@@ -102,34 +104,44 @@ func _evolve():
 func _idle_anim():
 	var t = create_tween()
 	t.set_loops()
-	t.tween_property($Body, "position:y", 0.1, 1).set_ease(Tween.EASE_IN_OUT)
-	t.tween_property($Body, "position:y", 0, 1).set_ease(Tween.EASE_IN_OUT)
+	t.tween_property($Body, "position:y", 0.1, 1.0).set_ease(Tween.EASE_IN_OUT)
+	t.tween_property($Body, "position:y", 0.0, 1.0).set_ease(Tween.EASE_IN_OUT)
 
 func _anim_happy():
 	var t = create_tween()
-	t.tween_property($Body, "scale", Vector3(1.2,1.2,1.2), 0.3)
-	t.tween_property($Body, "scale", Vector3(1,1,1), 0.3)
+	t.tween_property($Body, "scale", Vector3(1.2, 1.2, 1.2), 0.3)
+	t.tween_property($Body, "scale", Vector3(1.0, 1.0, 1.0), 0.3)
 
 func _anim_jump():
 	var t = create_tween()
 	t.tween_property($Body, "position:y", 0.8, 0.4).set_ease(Tween.EASE_OUT)
-	t.tween_property($Body, "position:y", 0, 0.4).set_ease(Tween.EASE_IN)
+	t.tween_property($Body, "position:y", 0.0, 0.4).set_ease(Tween.EASE_IN)
 
 func _anim_evolve():
 	var t = create_tween()
-	t.tween_property($Body, "scale", Vector3(2,2,2), 0.5)
-	t.tween_property($Body, "scale", Vector3(1,1,1), 0.5)
+	t.tween_property($Body, "scale", Vector3(2.0, 2.0, 2.0), 0.5)
+	t.tween_property($Body, "scale", Vector3(1.0, 1.0, 1.0), 0.5)
 
 # 💾 Sauvegarde
 func _save():
-	var d = {"h":health, "g":hunger, "e":energy, "hp":happiness, "hy":hygiene, "b":birth_time, "s":is_sleeping, "d":is_dead, "st":current_stage}
+	var d = {
+		"h": health, "g": hunger, "e": energy,
+		"hp": happiness, "hy": hygiene, "b": birth_time,
+		"s": is_sleeping, "d": is_dead, "st": current_stage
+	}
 	FileAccess.write_text("user://save.json", JSON.stringify(d))
 
 func _load():
 	if FileAccess.file_exists("user://save.json"):
-		var d = JSON.new().parse(FileAccess.read_text("user://save.json"))
-		health=d.get("h",100); hunger=d.get("g",80); energy=d.get("e",100)
-		happiness=d.get("hp",100); hygiene=d.get("hy",100)
-		birth_time=d.get("b", OS.get_ticks_msec()/60000.0)
-		is_sleeping=d.get("s",false); is_dead=d.get("d",false)
-		current_stage=d.get("st","EGG")
+		var text = FileAccess.read_text("user://save.json")
+		var d = JSON.new().parse(text)
+		if d is Dictionary:
+			health = d.get("h", 100)
+			hunger = d.get("g", 80)
+			energy = d.get("e", 100)
+			happiness = d.get("hp", 100)
+			hygiene = d.get("hy", 100)
+			birth_time = d.get("b", Time.get_ticks_msec() / 60000.0)
+			is_sleeping = d.get("s", false)
+			is_dead = d.get("d", false)
+			current_stage = d.get("st", "EGG")

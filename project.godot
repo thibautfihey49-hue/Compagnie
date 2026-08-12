@@ -1,22 +1,47 @@
-; Engine configuration file.
+[application]
+
 config_version=5
 
-[application]
-config_version=5
-config/name="Compagnie 3D 🐱"
-config/features=PackedStringArray("3d")
-run/low_processor_mode=true
+[application/config/name]
+value="Compagnie 3D 🐱"
+
+[application/config/features]
+value=PackedStringArray("3d")
+
+[application/run/low_processor_mode]
+value=true
 
 [display]
-window/size/viewport_width=720
-window/size/viewport_height=1280
-window/size/resizable=false
-window/stretch/mode="viewport"
+
+[display/window/size/viewport_width]
+value=720
+
+[display/window/size/viewport_height]
+value=1280
+
+[display/window/size/resizable]
+value=false
+
+[display/window/stretch/mode]
+value="viewport"
 
 [rendering]
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"
-environment/default_environment=res://environment.tres
 
-[input]
-ui_accept/0={"deadzone": 0.5, "event": {"type": "InputEventKey", "keycode": 4194309}}
+[rendering/renderer/rendering_method]
+value="gl_compatibility"
+
+[rendering/renderer/rendering_method.mobile]
+value="gl_compatibility"
+
+[rendering/environment/default_environment]
+value="res://environment.tres"
+
+[export]
+
+[export/android]
+debug=false
+package_name="com.compagnie3d.app"
+version_code=1
+version_name="1.0.0"
+min_sdk=26
+target_sdk=34
