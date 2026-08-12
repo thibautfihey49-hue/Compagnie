@@ -2,7 +2,7 @@ name: Build Compagnie 3D APK
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, 3d ]
   workflow_dispatch:
 
 jobs:
@@ -12,25 +12,33 @@ jobs:
       - name: 📥 Récupérer le code
         uses: actions/checkout@v4
 
-      - name: 🎮 Télécharger Godot Headless
+      - name: 🎮 Télécharger Godot 4.3 Headless
         run: |
-          GODOT_VERSION="4.3-stable"
-          wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip
-          unzip Godot_v${GODOT_VERSION}_linux.x86_64.zip
-          mv Godot_v${GODOT_VERSION}_linux.x86_64 /usr/local/bin/godot
+          GODOT_VERSION="4.3"
+          GODOT_URL="https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          echo "Téléchargement depuis : $GODOT_URL"
+          wget "$GODOT_URL" -O godot.zip
+          unzip godot.zip
+          mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot
           chmod +x /usr/local/bin/godot
+          godot --version
 
-      - name: 📱 Configurer Android
+      - name: 📱 Configurer Android SDK
         run: |
-          mkdir -p ~/.config/godot
+          mkdir -p ~/.android
           echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076607_latest.zip -o /tmp/cmd-tools.zip
-          unzip -q commandlinetools-linux-*.zip
+          echo "export ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+          
+          # Télécharger Android Command Line Tools
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076607_latest.zip -O /tmp/cmd-tools.zip
+          unzip -q /tmp/cmd-tools.zip -d /tmp
           mkdir -p $ANDROID_HOME/cmdline-tools
-          mv cmdline-tools $ANDROID_HOME/cmdline-tools/latest
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          mv /tmp/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+          
+          # Installer les composants
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-34" "build-tools;34.0.0" || true
 
-      - name: 🔑 Générer keystore
+      - name: 🔑 Créer keystore temporaire
         run: |
           keytool -genkey -noprompt -alias compagnie -dname "CN=Compagnie, O=Compagnie, C=FR" -keyalg RSA -keysize 2048 -keystore compagnie.keystore -storepass 123456 -keypass 123456 -validity 10000
 
@@ -43,3 +51,4 @@ jobs:
         with:
           name: Compagnie3D-APK
           path: Compagnie3D.apk
+          retention-days: 30
