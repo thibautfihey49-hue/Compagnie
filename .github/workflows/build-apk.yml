@@ -23,17 +23,33 @@ jobs:
           sudo mv Godot_v${GODOT_VERSION}_linux.x86_64 /usr/local/bin/godot
           godot --version
 
-      - name: 📦 Télécharger les templates d'export Android
+      - name: 📦 Télécharger et installer les templates d'export
         run: |
           GODOT_VERSION="4.3-stable"
+          # ⚠️ Godot attend le dossier SANS tiret : 4.3.stable
+          GODOT_VERSION_DIR="4.3.stable"
           TEMPLATES_URL="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz"
+          
           echo "Téléchargement templates : $TEMPLATES_URL"
           wget "$TEMPLATES_URL" -O templates.tpz
           
-          # Extraire dans le dossier attendu par Godot
-          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}/
-          unzip -q templates.tpz -d ~/.local/share/godot/export_templates/${GODOT_VERSION}/
-          ls -la ~/.local/share/godot/export_templates/${GODOT_VERSION}/
+          # Créer le dossier au CHEMIN EXACT attendu par Godot
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION_DIR}/
+          
+          # Extraire les templates
+          unzip -q templates.tpz -d ~/.local/share/godot/export_templates/${GODOT_VERSION_DIR}/
+          
+          # Vérification
+          echo "📂 Contenu du dossier templates :"
+          ls -la ~/.local/share/godot/export_templates/${GODOT_VERSION_DIR}/
+          
+          # Vérifier que les fichiers attendus existent
+          if [ -f ~/.local/share/godot/export_templates/${GODOT_VERSION_DIR}/android_release.apk ]; then
+            echo "✅ Template android_release.apk trouvé"
+          else
+            echo "❌ Template android_release.apk INTROUVABLE"
+            exit 1
+          fi
 
       - name: 📱 Configurer Android SDK
         uses: android-actions/setup-android@v3
