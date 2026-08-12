@@ -1,0 +1,22 @@
+; Engine configuration file.
+config_version=5
+
+[application]
+config_version=5
+config/name="Compagnie 3D 🐱"
+config/features=PackedStringArray("3d")
+run/low_processor_mode=true
+
+[display]
+window/size/viewport_width=720
+window/size/viewport_height=1280
+window/size/resizable=false
+window/stretch/mode="viewport"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/default_environment=res://environment.tres
+
+[input]
+ui_accept/0={"deadzone": 0.5, "event": {"type": "InputEventKey", "keycode": 4194309}}

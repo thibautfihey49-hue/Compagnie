@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Environment" path="res://environment.tres" id="env"]
+[ext_resource type="Script" path="res://scripts/main.gd" id="script"]
+
+[node name="MainWorld" type="Node3D"]
+script=ExtResource("script")
+environment=ExtResource("env")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform=Transform3D(1,0,0, 0,0.866,0.5, 0,-0.5,0.866, 0,2.5,4)
+fov=55
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform=Transform3D(0.707,-0.35,0.61, 0,0.87,0.5, -0.71,-0.35,0.61, 0,5,0)
+light_energy=1.2
+shadow_enabled=true
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh=BoxMesh(size=Vector3(10,0.2,10))
+material_override=StandardMaterial3D(albedo_color=Color(0.95,0.9,0.8,1))
+
+[node name="Pet" type="Node3D" parent="."]
+transform=Transform3D(1,0,0, 0,1,0, 0,0,1, 0,0.5,0)

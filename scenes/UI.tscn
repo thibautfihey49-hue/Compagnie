@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/ui.gd" id="ui"]
+
+[node name="UI" type="Control"]
+script=ExtResource("ui")
+anchors_preset=15
+anchor_right=1.0
+anchor_bottom=1.0
+
+[node name="Stats" type="Panel" parent="."]
+offset_left=20; offset_top=20; offset_right=320; offset_bottom=280
+
+[node name="Health" type="ProgressBar" parent="Stats"]
+offset_left=20; offset_top=20; offset_right=280; offset_bottom=50; max_value=100; value=100
+[node name="Hunger" type="ProgressBar" parent="Stats"]
+offset_left=20; offset_top=60; offset_right=280; offset_bottom=90; max_value=100; value=80
+[node name="Energy" type="ProgressBar" parent="Stats"]
+offset_left=20; offset_top=100; offset_right=280; offset_bottom=130; max_value=100; value=100
+[node name="Happiness" type="ProgressBar" parent="Stats"]
+offset_left=20; offset_top=140; offset_right=280; offset_bottom=170; max_value=100; value=100
+
+[node name="Btns" type="Panel" parent="."]
+offset_left=20; offset_top=320; offset_right=680; offset_bottom=440
+
+[node name="Feed" type="Button" parent="Btns"]
+offset_left=20; offset_top=20; offset_right=140; offset_bottom=100; text="🍖 Manger"
+[node name="Play" type="Button" parent="Btns"]
+offset_left=160; offset_top=20; offset_right=280; offset_bottom=100; text="🎮 Jouer"
+[node name="Sleep" type="Button" parent="Btns"]
+offset_left=300; offset_top=20; offset_right=420; offset_bottom=100; text="😴 Dormir"
+[node name="Clean" type="Button" parent="Btns"]
+offset_left=20; offset_top=110; offset_right=200; offset_bottom=180; text="🧼 Nettoyer"
+[node name="Heal" type="Button" parent="Btns"]
+offset_left=220; offset_top=110; offset_right=400; offset_bottom=180; text="💊 Soigner"

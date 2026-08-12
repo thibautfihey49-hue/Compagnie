@@ -1,0 +1,45 @@
+name: Build Compagnie 3D APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: 🎮 Télécharger Godot Headless
+        run: |
+          GODOT_VERSION="4.3-stable"
+          wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip
+          unzip Godot_v${GODOT_VERSION}_linux.x86_64.zip
+          mv Godot_v${GODOT_VERSION}_linux.x86_64 /usr/local/bin/godot
+          chmod +x /usr/local/bin/godot
+
+      - name: 📱 Configurer Android
+        run: |
+          mkdir -p ~/.config/godot
+          echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076607_latest.zip -o /tmp/cmd-tools.zip
+          unzip -q commandlinetools-linux-*.zip
+          mkdir -p $ANDROID_HOME/cmdline-tools
+          mv cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+      - name: 🔑 Générer keystore
+        run: |
+          keytool -genkey -noprompt -alias compagnie -dname "CN=Compagnie, O=Compagnie, C=FR" -keyalg RSA -keysize 2048 -keystore compagnie.keystore -storepass 123456 -keypass 123456 -validity 10000
+
+      - name: 📦 Exporter l'APK
+        run: |
+          godot --headless --path . --export-release "Android" Compagnie3D.apk
+
+      - name: 📤 Uploader l'APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Compagnie3D-APK
+          path: Compagnie3D.apk
