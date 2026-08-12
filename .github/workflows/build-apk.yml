@@ -23,7 +23,7 @@ jobs:
           sudo mv Godot_v${GODOT_VERSION}_linux.x86_64 /usr/local/bin/godot
           godot --version
 
-      - name: 📦 Installer les templates d'export
+      - name: 📦 Installer les templates — CHEMIN EXACT DE GODOT
         run: |
           GODOT_VERSION="4.3-stable"
           GODOT_FOLDER_NAME="4.3.stable"
@@ -32,30 +32,25 @@ jobs:
           echo "Téléchargement templates : $TEMPLATES_URL"
           wget "$TEMPLATES_URL" -O templates.tpz
           
-          # Chemin officiel attendu par Godot
-          TEMPLATES_ROOT="$HOME/.local/share/godot/templates"
+          # 🔴 CHEMIN EXACT — Godot cherche DANS export_templates/ !
+          TEMPLATES_ROOT="$HOME/.local/share/godot/export_templates"
           FINAL_DIR="${TEMPLATES_ROOT}/${GODOT_FOLDER_NAME}"
           mkdir -p "${FINAL_DIR}"
           
           # Extraire l'archive
           unzip -q templates.tpz -d ./templates_extracted
           
-          # 🎯 LES FICHIERS SONT DANS ./templates_extracted/templates/
-          echo "📂 Contenu du sous-dossier templates :"
-          ls -la ./templates_extracted/templates/
-          
-          # ✅ Copier les .apk DU SOUS-DOSSIER vers le dossier final
+          # Copier les .apk depuis le sous-dossier templates/
           cp ./templates_extracted/templates/* "${FINAL_DIR}/"
           
-          # Vérification
-          echo ""
+          # ✅ Vérification
           echo "📂 Chemin final : ${FINAL_DIR}"
           ls -la "${FINAL_DIR}"
           
-          if [ -f "${FINAL_DIR}/android_release.apk" ]; then
-            echo "✅ Template android_release.apk PRÊT"
+          if [ -f "${FINAL_DIR}/android_release.apk" ] && [ -f "${FINAL_DIR}/android_debug.apk" ]; then
+            echo "✅ Templates Android PRÊTS aux emplacements attendus"
           else
-            echo "❌ ÉCHEC — fichiers non trouvés"
+            echo "❌ ÉCHEC — fichiers manquants"
             exit 1
           fi
 
