@@ -9,33 +9,33 @@ jobs:
   build-apk:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Godot 4.3
+      - name: 🎮 Install GodOT 4.2.2 STABLE (FORMAT CONNU)
         run: |
-          GODOT_VERSION="4.3-stable"
-          wget "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip" -O godot.zip
+          GV="4.2.2-stable"
+          wget "https://github.com/godotengine/godot/releases/download/${GV}/Godot_v${GV}_linux.x86_64.zip" -O godot.zip
           unzip -q godot.zip
-          chmod +x Godot_v${GODOT_VERSION}_linux.x86_64
-          sudo mv Godot_v${GODOT_VERSION}_linux.x86_64 /usr/local/bin/godot
+          chmod +x Godot_v${GV}_linux.x86_64
+          sudo mv Godot_v${GV}_linux.x86_64 /usr/local/bin/godot
           godot --version
 
-      - name: Install Android export templates
+      - name: 📦 Install templates 4.2.2
         run: |
-          GODOT_VERSION="4.3-stable"
-          GODOT_FOLDER="4.3.stable"
-          wget "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz" -O templates.tpz
-          TARGET="$HOME/.local/share/godot/export_templates/${GODOT_FOLDER}"
-          mkdir -p "$TARGET"
-          unzip -q templates.tpz -d ./tmp_tpl
-          cp ./tmp_tpl/templates/* "$TARGET/"
-          ls -la "$TARGET"
+          GV="4.2.2-stable"
+          GF="4.2.2.stable"
+          wget "https://github.com/godotengine/godot/releases/download/${GV}/Godot_v${GV}_export_templates.tpz" -O tpl.tpz
+          DST="$HOME/.local/share/godot/export_templates/${GF}"
+          mkdir -p "$DST"
+          unzip -q tpl.tpz -d ./tmp
+          cp ./tmp/templates/* "$DST/"
+          ls -la "$DST"
 
-      - name: Setup Android SDK
+      - name: Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Create keystore
+      - name: Keystore
         run: |
           keytool -genkey -noprompt -alias compagnie \
             -dname "CN=Compagnie, O=Compagnie, C=FR" \
@@ -43,7 +43,7 @@ jobs:
             -keystore compagnie.keystore \
             -storepass 123456 -keypass 123456 -validity 10000
 
-      - name: Generate preset + build APK
+      - name: 🚀 Build APK
         run: bash scripts/build_android.sh
 
       - name: Upload APK
