@@ -12,16 +12,28 @@ jobs:
       - name: 📥 Récupérer le code
         uses: actions/checkout@v4
 
-      - name: 🎮 Télécharger Godot 4.3 (GitHub officiel)
+      - name: 🎮 Télécharger Godot 4.3
         run: |
           GODOT_VERSION="4.3-stable"
           GODOT_URL="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
-          echo "Téléchargement : $GODOT_URL"
+          echo "Téléchargement Godot : $GODOT_URL"
           wget "$GODOT_URL" -O godot.zip
           unzip -q godot.zip
           chmod +x Godot_v${GODOT_VERSION}_linux.x86_64
           sudo mv Godot_v${GODOT_VERSION}_linux.x86_64 /usr/local/bin/godot
           godot --version
+
+      - name: 📦 Télécharger les templates d'export Android
+        run: |
+          GODOT_VERSION="4.3-stable"
+          TEMPLATES_URL="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz"
+          echo "Téléchargement templates : $TEMPLATES_URL"
+          wget "$TEMPLATES_URL" -O templates.tpz
+          
+          # Extraire dans le dossier attendu par Godot
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}/
+          unzip -q templates.tpz -d ~/.local/share/godot/export_templates/${GODOT_VERSION}/
+          ls -la ~/.local/share/godot/export_templates/${GODOT_VERSION}/
 
       - name: 📱 Configurer Android SDK
         uses: android-actions/setup-android@v3

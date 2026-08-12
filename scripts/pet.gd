@@ -122,26 +122,32 @@ func _anim_evolve():
 	t.tween_property($Body, "scale", Vector3(2.0, 2.0, 2.0), 0.5)
 	t.tween_property($Body, "scale", Vector3(1.0, 1.0, 1.0), 0.5)
 
-# 💾 Sauvegarde
+# 💾 Sauvegarde — SYNTAXE CORRECTE GODOT 4
 func _save():
 	var d = {
 		"h": health, "g": hunger, "e": energy,
 		"hp": happiness, "hy": hygiene, "b": birth_time,
 		"s": is_sleeping, "d": is_dead, "st": current_stage
 	}
-	FileAccess.write_text("user://save.json", JSON.stringify(d))
+	var file = FileAccess.open("user://save.json", FileAccess.WRITE)
+	if file:
+		file.write_line(JSON.stringify(d))
+		file.close()
 
 func _load():
 	if FileAccess.file_exists("user://save.json"):
-		var text = FileAccess.read_text("user://save.json")
-		var d = JSON.new().parse(text)
-		if d is Dictionary:
-			health = d.get("h", 100)
-			hunger = d.get("g", 80)
-			energy = d.get("e", 100)
-			happiness = d.get("hp", 100)
-			hygiene = d.get("hy", 100)
-			birth_time = d.get("b", Time.get_ticks_msec() / 60000.0)
-			is_sleeping = d.get("s", false)
-			is_dead = d.get("d", false)
-			current_stage = d.get("st", "EGG")
+		var file = FileAccess.open("user://save.json", FileAccess.READ)
+		if file:
+			var text = file.get_as_text()
+			file.close()
+			var d = JSON.new().parse(text)
+			if d is Dictionary:
+				health = d.get("h", 100)
+				hunger = d.get("g", 80)
+				energy = d.get("e", 100)
+				happiness = d.get("hp", 100)
+				hygiene = d.get("hy", 100)
+				birth_time = d.get("b", Time.get_ticks_msec() / 60000.0)
+				is_sleeping = d.get("s", false)
+				is_dead = d.get("d", false)
+				current_stage = d.get("st", "EGG")
