@@ -23,7 +23,7 @@ jobs:
           sudo mv Godot_v${GODOT_VERSION}_linux.x86_64 /usr/local/bin/godot
           godot --version
 
-      - name: 📦 Installer les templates — CHEMIN EXACT DE GODOT
+      - name: 📦 Installer les templates d'export Android
         run: |
           GODOT_VERSION="4.3-stable"
           GODOT_FOLDER_NAME="4.3.stable"
@@ -32,25 +32,19 @@ jobs:
           echo "Téléchargement templates : $TEMPLATES_URL"
           wget "$TEMPLATES_URL" -O templates.tpz
           
-          # 🔴 CHEMIN EXACT — Godot cherche DANS export_templates/ !
           TEMPLATES_ROOT="$HOME/.local/share/godot/export_templates"
           FINAL_DIR="${TEMPLATES_ROOT}/${GODOT_FOLDER_NAME}"
           mkdir -p "${FINAL_DIR}"
           
-          # Extraire l'archive
           unzip -q templates.tpz -d ./templates_extracted
-          
-          # Copier les .apk depuis le sous-dossier templates/
           cp ./templates_extracted/templates/* "${FINAL_DIR}/"
           
-          # ✅ Vérification
-          echo "📂 Chemin final : ${FINAL_DIR}"
           ls -la "${FINAL_DIR}"
           
-          if [ -f "${FINAL_DIR}/android_release.apk" ] && [ -f "${FINAL_DIR}/android_debug.apk" ]; then
-            echo "✅ Templates Android PRÊTS aux emplacements attendus"
+          if [ -f "${FINAL_DIR}/android_release.apk" ]; then
+            echo "✅ Templates Android OK"
           else
-            echo "❌ ÉCHEC — fichiers manquants"
+            echo "❌ Templates Android MANQUANTS"
             exit 1
           fi
 
@@ -61,9 +55,72 @@ jobs:
         run: |
           keytool -genkey -noprompt -alias compagnie -dname "CN=Compagnie, O=Compagnie, C=FR" -keyalg RSA -keysize 2048 -keystore compagnie.keystore -storepass 123456 -keypass 123456 -validity 10000
 
-      - name: 📦 Exporter l'APK
+      - name: 🤖 GÉNÉRER LE PRESET ANDROID PAR GODOT PUIS EXPORTER
         run: |
+          # 🎯 Étape 1 : Lancer Godot une fois pour générer la config de base
+          timeout 15 godot --headless --path . --editor 2>/dev/null || true
+          
+          # 🎯 Étape 2 : Générer export_presets.cfg AVEC UN PRESET ANDROID VALIDE
+          cat > export_presets.cfg << 'PRESET_EOF'
+[preset.0]
+
+name="Android"
+platform="Android"
+runnable=true
+custom_features=""
+export_filter="all"
+include_filter=""
+exclude_filter=""
+export_path="Compagnie3D.apk"
+encryption_include_filters=""
+encryption_exclude_filters=""
+patch_package=false
+modify_package=false
+
+[preset.0.options]
+
+package_name="fr.compagnie3d.app"
+version_code=1
+version_name="1.0.0"
+min_sdk_version=26
+target_sdk_version=34
+release=true
+keystore/release="compagnie.keystore"
+keystore/release_user="compagnie"
+keystore/release_password="123456"
+one_shot_deploy=false
+deploy_to_remote=false
+graphics_driver/vulkan=false
+graphics_driver/opengl3=true
+xr_features/oculus_mobile_support=false
+xr_features/openxr=false
+screen/immersive_mode=true
+screen/support_small=true
+screen/support_normal=true
+screen/support_large=true
+screen/support_xlarge=true
+user_data_backup=true
+enable_high_end_graphics=false
+internet_permission=false
+access_network_state_permission=false
+access_wifi_state_permission=false
+vibrate_permission=false
+PRESET_EOF
+          
+          echo "✅ export_presets.cfg généré"
+          cat export_presets.cfg
+          
+          # 🎯 Étape 3 : Exporter l'APK
+          echo "🚀 Export en cours..."
           godot --headless --path . --export-release "Android" Compagnie3D.apk
+          
+          if [ -f Compagnie3D.apk ]; then
+            echo "✅ APK GÉNÉRÉ AVEC SUCCÈS !"
+            ls -la Compagnie3D.apk
+          else
+            echo "❌ ÉCHEC DE L'EXPORT"
+            exit 1
+          fi
 
       - name: 📤 Uploader l'APK
         uses: actions/upload-artifact@v4
