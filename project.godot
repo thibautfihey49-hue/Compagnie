@@ -5,6 +5,12 @@ config_version=5
 [application/config/name]
 value="Compagnie3D"
 
+[application/config/package_name]
+value="fr.compagnie3d.app"
+
+[application/config/version]
+value="1.0.0"
+
 [application/config/features]
 value=PackedStringArray("3d")
 
