@@ -23,7 +23,7 @@ jobs:
           sudo mv Godot_v${GODOT_VERSION}_linux.x86_64 /usr/local/bin/godot
           godot --version
 
-      - name: 📦 Installer les templates d'export (structure CORRECTE)
+      - name: 📦 Installer les templates d'export
         run: |
           GODOT_VERSION="4.3-stable"
           GODOT_FOLDER_NAME="4.3.stable"
@@ -32,31 +32,30 @@ jobs:
           echo "Téléchargement templates : $TEMPLATES_URL"
           wget "$TEMPLATES_URL" -O templates.tpz
           
-          # ⚠️ CHEMIN CORRECT : ~/.local/share/godot/templates/ (PAS export_templates !)
+          # Chemin officiel attendu par Godot
           TEMPLATES_ROOT="$HOME/.local/share/godot/templates"
-          mkdir -p "${TEMPLATES_ROOT}/${GODOT_FOLDER_NAME}"
+          FINAL_DIR="${TEMPLATES_ROOT}/${GODOT_FOLDER_NAME}"
+          mkdir -p "${FINAL_DIR}"
           
-          # Extraire l'archive tpz
+          # Extraire l'archive
           unzip -q templates.tpz -d ./templates_extracted
           
-          # 🔍 Voir ce qu'il y a dans l'archive
-          echo "📂 Contenu de l'archive tpz :"
-          ls -la ./templates_extracted/
+          # 🎯 LES FICHIERS SONT DANS ./templates_extracted/templates/
+          echo "📂 Contenu du sous-dossier templates :"
+          ls -la ./templates_extracted/templates/
           
-          # Copier tous les fichiers dans le dossier final
-          cp -r ./templates_extracted/* "${TEMPLATES_ROOT}/${GODOT_FOLDER_NAME}/"
+          # ✅ Copier les .apk DU SOUS-DOSSIER vers le dossier final
+          cp ./templates_extracted/templates/* "${FINAL_DIR}/"
           
-          # ✅ Vérification finale
+          # Vérification
           echo ""
-          echo "📂 Chemin final : ${TEMPLATES_ROOT}/${GODOT_FOLDER_NAME}/"
-          ls -la "${TEMPLATES_ROOT}/${GODOT_FOLDER_NAME}/"
+          echo "📂 Chemin final : ${FINAL_DIR}"
+          ls -la "${FINAL_DIR}"
           
-          # Vérifier les fichiers essentiels
-          if [ -f "${TEMPLATES_ROOT}/${GODOT_FOLDER_NAME}/android_release.apk" ]; then
-            echo "✅ Template android_release.apk OK"
+          if [ -f "${FINAL_DIR}/android_release.apk" ]; then
+            echo "✅ Template android_release.apk PRÊT"
           else
-            echo "❌ Template android_release.apk INTROUVABLE"
-            find ./templates_extracted -name "*.apk" 2>/dev/null || echo "Aucun .apk trouvé dans l'archive"
+            echo "❌ ÉCHEC — fichiers non trouvés"
             exit 1
           fi
 
