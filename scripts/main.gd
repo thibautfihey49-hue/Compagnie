@@ -1,8 +1,8 @@
 extends Node2D
 
-@onready var animal: Node3D = $Animal
+@onready var animal: Node3D = $World/Animal
 @onready var ui: Control = $UI
 
-func _ready():
-	print("🚀 COMPAGNIE 3D DÉMARRÉE")
-	ui.connecter_animal(animal)
+func _ready() -> void:
+\tprint("🚀 COMPAGNIE 3D DÉMARRÉE")
+\tui.connecter_animal(animal)

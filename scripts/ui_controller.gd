@@ -17,54 +17,76 @@ extends Control
 var animal: Node3D
 var alerte_timer: Timer
 
-func _ready():
-	alerte_timer = Timer.new()
-	add_child(alerte_timer)
-	alerte_timer.wait_time = 3.0
-	alerte_timer.timeout.connect(_cacher_alerte)
-	alerte_container.visible = false
-	btn_nourrir.pressed.connect(_on_nourrir)
-	btn_jouer.pressed.connect(_on_jouer)
-	btn_dormir.pressed.connect(_on_dormir)
-	btn_soigner.pressed.connect(_on_soigner)
-	print("✅ UI chargée")
+func _ready() -> void:
+\talerte_timer = Timer.new()
+\tadd_child(alerte_timer)
+\talerte_timer.one_shot = true
+\talerte_timer.wait_time = 3.0
+\talerte_timer.timeout.connect(_cacher_alerte)
+\talerte_container.visible = false
+\tbtn_nourrir.pressed.connect(_on_nourrir)
+\tbtn_jouer.pressed.connect(_on_jouer)
+\tbtn_dormir.pressed.connect(_on_dormir)
+\tbtn_soigner.pressed.connect(_on_soigner)
 
-func connecter_animal(animal_node):
-	animal = animal_node
-	animal.besoins_mis_a_jour.connect(_on_besoins)
-	animal.evolution.connect(_on_evolution)
-	animal.alerte.connect(_on_alerte)
-	animal.mort.connect(_on_mort)
-	print("🔗 Animal connecté")
+func connecter_animal(animal_node: Node3D) -> void:
+\tanimal = animal_node
+\tanimal.besoins_mis_a_jour.connect(_on_besoins)
+\tanimal.evolution.connect(_on_evolution)
+\tanimal.alerte.connect(_on_alerte)
+\tanimal.mort.connect(_on_mort)
 
-func _on_besoins(faim, bonheur, sante, energie):
-	barre_faim.value = faim
-	barre_bonheur.value = bonheur
-	barre_sante.value = sante
-	barre_energie.value = energie
-	barre_faim.modulate = _couleur(faim)
-	barre_bonheur.modulate = _couleur(bonheur)
-	barre_sante.modulate = _couleur(sante)
-	barre_energie.modulate = _couleur(energie)
-	if animal: label_age.text = "Âge : " + str(round(animal.age_heures / 60.0, 1)) + " min"
+func _on_besoins(faim, bonheur, sante, energie) -> void:
+\tbarre_faim.value = faim
+\tbarre_bonheur.value = bonheur
+\tbarre_sante.value = sante
+\tbarre_energie.value = energie
+\tif animal:
+\t\tlabel_age.text = "Âge : " + str(round(animal.age_heures / 60.0, 1)) + " min"
 
-func _couleur(v):
-	if v < 15: return Color(1, 0.15, 0.15)
-	if v < 30: return Color(1, 0.5, 0.1)
-	if v < 50: return Color(1, 0.8, 0.1)
-	return Color(0.2, 1, 0.4)
+func _couleur(v: float) -> Color:
+\tif v < 15.0:
+\t\treturn Color(1, 0.15, 0.15)
+\tif v < 30.0:
+\t\treturn Color(1, 0.5, 0.1)
+\tif v < 50.0:
+\t\treturn Color(1, 0.8, 0.1)
+\treturn Color(0.2, 1, 0.4)
 
-func _on_evolution(nom): label_etat.text = "État : " + nom; label_etat.modulate = Color(1, 0.85, 0.3)
-func _on_alerte(nom, val):
-	var ic = {"faim":"🍽️", "bonheur":"😊", "sante":"❤️", "energie":"⚡"}
-	var nm = {"faim":"Faim", "bonheur":"Bonheur", "sante":"Santé", "energie":"Énergie"}
-	alerte_icone.text = ic.get(nom, "⚠️")
-	alerte_texte.text = nm.get(nom, nom) + " faible !"
-	alerte_container.visible = true
-	alerte_timer.start()
-func _cacher_alerte(): alerte_container.visible = false
-func _on_mort(): alerte_icone.text = "💀"; alerte_texte.text = "Votre animal est parti..."; alerte_container.visible = true; for b in [btn_nourrir,btn_jouer,btn_dormir,btn_soigner]: b.disabled = true
-func _on_nourrir(): if animal: animal.nourrir()
-func _on_jouer(): if animal: animal.jouer()
-func _on_dormir(): if animal: animal.dormir()
-func _on_soigner(): if animal: animal.soigner()
+func _on_evolution(nom: String) -> void:
+\tlabel_etat.text = "État : " + nom
+\tlabel_etat.modulate = Color(1, 0.85, 0.3)
+
+func _on_alerte(nom: String, val: float) -> void:
+\tvar ic := {"faim":"🍽️", "bonheur":"😊", "sante":"❤️", "energie":"⚡"}
+\tvar nm := {"faim":"Faim", "bonheur":"Bonheur", "sante":"Santé", "energie":"Énergie"}
+\talerte_icone.text = ic.get(nom, "⚠️")
+\talerte_texte.text = nm.get(nom, nom) + " faible !"
+\talerte_container.visible = true
+\talerte_timer.start()
+
+func _cacher_alerte() -> void:
+\talerte_container.visible = false
+
+func _on_mort() -> void:
+\talerte_icone.text = "💀"
+\talerte_texte.text = "Votre animal est parti..."
+\talerte_container.visible = true
+\tfor b in [btn_nourrir, btn_jouer, btn_dormir, btn_soigner]:
+\t\tb.disabled = true
+
+func _on_nourrir() -> void:
+\tif animal:
+\t\tanimal.nourrir()
+
+func _on_jouer() -> void:
+\tif animal:
+\t\tanimal.jouer()
+
+func _on_dormir() -> void:
+\tif animal:
+\t\tanimal.dormir()
+
+func _on_soigner() -> void:
+\tif animal:
+\t\tanimal.soigner()

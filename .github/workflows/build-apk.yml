@@ -1,7 +1,9 @@
 name: Build Compagnie 3D APK
 on:
-  push: { branches: [main, master] }
-  workflow_dispatch: {}
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,9 +13,8 @@ jobs:
         run: |
           wget -q https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip -O godot.zip
           unzip -q godot.zip
-          chmod +x Godot_v4.3-stable_linux.x86_64/Godot_v4.3-stable_linux.x86_64
-          sudo mv Godot_v4.3-stable_linux.x86_64/Godot_v4.3-stable_linux.x86_64 /usr/local/bin/godot
-          godot --version
+          chmod +x Godot_v4.3-stable_linux.x86_64
+          sudo mv Godot_v4.3-stable_linux.x86_64 /usr/local/bin/godot
       - name: Install templates
         run: |
           mkdir -p ~/.local/share/godot/export_templates/4.3.stable
@@ -23,4 +24,6 @@ jobs:
       - name: Build APK
         run: bash scripts/build_android.sh
       - uses: actions/upload-artifact@v4
-        with: { name: Compagnie3D-APK, path: Compagnie3D.apk, retention-days: 30 }
+        with:
+          name: Compagnie3D-APK
+          path: Compagnie3D.apk
