@@ -1,4 +1,4 @@
 extends Node2D
 
-func _ready():
-    print("✅ COMPAGNIE 3D DÉMARRÉ")
+func _ready() -> void:
+\tprint("COMPAGNIE 3D DÉMARRÉ")

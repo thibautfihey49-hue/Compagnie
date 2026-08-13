@@ -3,8 +3,6 @@
 config/name="compagnie3d"
 config/features=PackedStringArray("3d")
 run/low_processor_mode=true
-
-# ✅ LA BONNE LIGNE QUI MANQUAIT DEPUIS LE DÉBUT
 run/main_scene="res://scenes/main.tscn"
 
 [display]
