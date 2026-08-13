@@ -1,13 +1,13 @@
 #!/bin/bash
 set -e
 
-echo "🤖 1/4 : Import ressources"
+echo "🤖 1/4 : Import"
 rm -rf .godot/ export_presets.cfg
 timeout 60 godot --headless --path . --import 2>/dev/null || true
 echo "✅ Import OK"
 
 echo ""
-echo "🤖 2/4 : Keystore PKCS12 (STANDARD ANDROID) — storepass=keypass OBLIGATOIRE"
+echo "🤖 2/4 : Keystore PKCS12 — storepass=keypass"
 rm -f compagnie.keystore
 keytool -genkey -noprompt -alias compagnie \
   -dname "CN=Compagnie, O=Compagnie, C=FR" \
@@ -16,10 +16,10 @@ keytool -genkey -noprompt -alias compagnie \
   -storetype PKCS12 \
   -storepass "azerty123" \
   -keypass "azerty123" 2>/dev/null
-echo "✅ Keystore PKCS12 OK — storepass=keypass=azerty123"
+echo "✅ Keystore OK"
 
 echo ""
-echo "🤖 3/4 : Preset — DEBUG + 2 ARCHITECTURES (compatibilité MAX)"
+echo "🤖 3/4 : Preset — AUCUN COMMENTAIRE DEDANS"
 cat > export_presets.cfg << 'CFG'
 [preset.0]
 name="Android"
@@ -44,7 +44,6 @@ package/signing_debug_password="azerty123"
 package/signing_release_key_store="compagnie.keystore"
 package/signing_release_user="compagnie"
 package/signing_release_password="azerty123"
-# ✅ 2 ARCHITECTURES = COMPATIBLE 99% DES TÉLÉPHONES
 architectures/armeabi-v7a=true
 architectures/arm64-v8a=true
 architectures/x86=false
@@ -61,17 +60,14 @@ CFG
 echo "✅ Preset OK"
 
 echo ""
-echo "🤖 4/4 : 🚀 EXPORT DEBUG (S'INSTALLE TOUJOURS)"
+echo "🤖 4/4 : 🚀 Export DEBUG"
 godot --headless --path . --export-debug "Android" Compagnie3D.apk 2>&1 | grep -v "Custom cursor\|Blender path" | tail -10
 
 if [ -f Compagnie3D.apk ]; then
   echo ""
   echo "🎉🎉🎉 APK DEBUG GÉNÉRÉ ! 🎉🎉🎉"
   ls -lh Compagnie3D.apk
-  echo ""
-  echo "👉 Copie ce fichier sur ton téléphone et installe-le"
-  echo "👉 IL S'INSTALLERA SANS ERREUR CETTE FOIS !"
 else
-  echo "❌ ÉCHEC DEBUG"
+  echo "❌ ÉCHEC"
   exit 1
 fi

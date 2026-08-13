@@ -1,16 +1,13 @@
 name: Build Compagnie 3D APK
-
 on:
   push:
     branches: [ main, master, 3d ]
   workflow_dispatch:
-
 jobs:
   build-apk:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Install Godot 4.3
         run: |
           GV="4.3-stable"
@@ -19,21 +16,17 @@ jobs:
           chmod +x Godot_v${GV}_linux.x86_64
           sudo mv Godot_v${GV}_linux.x86_64 /usr/local/bin/godot
           godot --version
-
       - name: Templates Android 4.3
         run: |
-          GV="4.3-stable"
-          GF="4.3.stable"
+          GV="4.3-stable"; GF="4.3.stable"
           wget "https://github.com/godotengine/godot/releases/download/${GV}/Godot_v${GV}_export_templates.tpz" -O tpl.tpz
           DST="$HOME/.local/share/godot/export_templates/${GF}"
           mkdir -p "$DST"
           unzip -q tpl.tpz -d ./tmp
           cp ./tmp/templates/* "$DST/"
-
       - name: Build APK DEBUG
         run: bash scripts/build_android.sh
-
-      - name: Upload APK DEBUG
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Compagnie3D-APK-DEBUG
