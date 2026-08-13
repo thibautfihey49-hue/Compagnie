@@ -1,8 +1,10 @@
 [application]
 
-config/name="compagnie3d"
+config/name="Compagnie 3D"
 config/features=PackedStringArray("3d")
 run/low_processor_mode=true
+run/low_processor_mode_hz=30
+run/max_fps=60
 run/main_scene="res://scenes/main.tscn"
 
 [display]
@@ -11,10 +13,11 @@ window/size/viewport_width=720
 window/size/viewport_height=1280
 window/size/resizable=false
 window/stretch/mode="viewport"
+window/stretch/aspect="keep"
 
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-environment/default_environment="res://environment.tres"
 textures/vram_compression/import_etc2_astc=true
+environment/default_environment="res://environment.tres"
