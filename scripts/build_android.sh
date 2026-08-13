@@ -1,73 +1,61 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "🤖 1/4 : Import des ressources"
-rm -rf .godot export_presets.cfg
-timeout 90 godot --headless --path . --import >/dev/null 2>&1 || true
+echo "🤖 1/5 : Import des ressources"
+timeout 120 godot --headless --path . --import >/dev/null 2>&1 || true
 
-echo "✅ Vérification de la scène principale..."
-grep -q 'run/main_scene="res://scenes/main.tscn"' project.godot
-test -f scenes/main.tscn
-test -f scripts/main.gd
-echo "✅ Scène et script présents"
+echo "✅ Vérification des fichiers..."
+test -f project.godot && test -f scenes/main.tscn && test -f scenes/animal.tscn && test -f scenes/ui.tscn
+echo "✅ Tous fichiers présents"
 
-echo "🤖 2/4 : Création du keystore PKCS12"
+echo "🤖 2/5 : Création du keystore PKCS12"
 rm -f compagnie.keystore
-keytool -genkeypair -noprompt \
-  -alias compagnie \
-  -dname "CN=Compagnie, O=Compagnie, C=FR" \
-  -keyalg RSA \
-  -keysize 2048 \
-  -validity 10000 \
-  -keystore compagnie.keystore \
-  -storetype PKCS12 \
-  -storepass "azerty123" \
-  -keypass "azerty123" >/dev/null 2>&1
-echo "✅ Keystore PKCS12 créé"
+keytool -genkeypair -noprompt -alias compagnie -dname "CN=Compagnie 3D, O=Compagnie, C=FR" \
+  -keyalg RSA -keysize 2048 -validity 10000 -keystore compagnie.keystore \
+  -storetype PKCS12 -storepass "azerty123" -keypass "azerty123"
+echo "✅ Keystore créé"
 
-echo "🤖 3/4 : Création du preset d'export"
-cat > export_presets.cfg <<'CFG'
+echo "🤖 3/5 : Création export_presets.cfg (Godot 4.3)"
+cat > export_presets.cfg << 'CFG'
 [preset.0]
 name="Android"
 platform="Android"
 runnable=true
 export_filter="all"
-include_filter=""
-exclude_filter=""
 export_path="Compagnie3D.apk"
 
 [preset.0.options]
-package/unique_name="fr.compagnie3d.app"
 package/name="Compagnie 3D"
-package/min_sdk=24
-package/target_sdk=33
+package/unique_name="fr.compagnie3d.app"
+package/min_sdk=26
+package/target_sdk=34
 version/code=1
 version/name="1.0.0"
 package/release=false
 package/signing_debug_key_store="compagnie.keystore"
 package/signing_debug_user="compagnie"
 package/signing_debug_password="azerty123"
-package/signing_release_key_store="compagnie.keystore"
-package/signing_release_user="compagnie"
-package/signing_release_password="azerty123"
-architectures/armeabi-v7a=true
 architectures/arm64-v8a=true
-architectures/x86=false
-architectures/x86_64=false
-graphics_driver/vulkan=false
+architectures/armeabi-v7a=true
 graphics_driver/opengl3=true
-screen/immersive_mode=true
-screen/support_small=true
-screen/support_normal=true
-screen/support_large=true
-screen/support_xlarge=true
-textures/etc2=true
+graphics_driver/vulkan=false
 CFG
 echo "✅ Preset prêt"
 
-echo "🤖 4/4 : Compilation de l'APK DEBUG"
+echo "🤖 4/5 : Vérification templates Android"
+TPL_DIR="$HOME/.local/share/godot/export_templates/4.3.stable"
+if [ ! -f "$TPL_DIR/android_debug.apk" ]; then
+  echo "📥 Téléchargement templates..."
+  mkdir -p "$TPL_DIR"
+  wget -q "https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_export_templates.tpz" -O templates.tpz
+  unzip -q templates.tpz -d ./tmp
+  cp ./tmp/templates/* "$TPL_DIR/"
+  rm -rf tmp templates.tpz
+fi
+echo "✅ Templates prêts"
+
+echo "🤖 5/5 : Compilation APK"
 godot --headless --path . --export-debug "Android" Compagnie3D.apk
 test -f Compagnie3D.apk
 echo ""
-echo "🎉🎉🎉 APK GÉNÉRÉ AVEC SUCCÈS ! 🎉🎉🎉"
-ls -lh Compagnie3D.apk
+echo "🎉 APK GÉNÉRÉE : $(ls -lh Compagnie3D.apk | awk '{print $5}')"

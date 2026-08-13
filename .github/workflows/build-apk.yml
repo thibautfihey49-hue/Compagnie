@@ -1,42 +1,26 @@
 name: Build Compagnie 3D APK
-
 on:
-  push:
-    branches: [ main, master, 3d ]
-  workflow_dispatch:
+  push: { branches: [main, master] }
+  workflow_dispatch: {}
 jobs:
-  build-apk:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
-
-      - name: Installer Godot 4.3
+      - uses: actions/checkout@v4
+      - name: Install Godot 4.3
         run: |
-          GV="4.3-stable"
-          wget "https://github.com/godotengine/godot/releases/download/${GV}/Godot_v${GV}_linux.x86_64.zip" -O godot.zip
+          wget -q https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip -O godot.zip
           unzip -q godot.zip
-          chmod +x Godot_v${GV}_linux.x86_64
-          sudo mv Godot_v${GV}_linux.x86_64 /usr/local/bin/godot
+          chmod +x Godot_v4.3-stable_linux.x86_64/Godot_v4.3-stable_linux.x86_64
+          sudo mv Godot_v4.3-stable_linux.x86_64/Godot_v4.3-stable_linux.x86_64 /usr/local/bin/godot
           godot --version
-
-      - name: Installer les templates Android 4.3
+      - name: Install templates
         run: |
-          GV="4.3-stable"
-          GF="4.3.stable"
-          wget "https://github.com/godotengine/godot/releases/download/${GV}/Godot_v${GV}_export_templates.tpz" -O tpl.tpz
-          DST="$HOME/.local/share/godot/export_templates/${GF}"
-          mkdir -p "$DST"
-          unzip -q tpl.tpz -d ./tmp
-          cp ./tmp/templates/* "$DST/"
-          ls -la "$DST"
-
-      - name: Construire l'APK
+          mkdir -p ~/.local/share/godot/export_templates/4.3.stable
+          wget -q https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_export_templates.tpz -O templates.tpz
+          unzip -q templates.tpz -d ./tmp
+          cp ./tmp/templates/* ~/.local/share/godot/export_templates/4.3.stable/
+      - name: Build APK
         run: bash scripts/build_android.sh
-
-      - name: Uploader l'APK dans Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: Compagnie3D-APK-FINAL
-          path: Compagnie3D.apk
-          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with: { name: Compagnie3D-APK, path: Compagnie3D.apk, retention-days: 30 }
