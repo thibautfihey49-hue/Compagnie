@@ -7,7 +7,7 @@ value=PackedStringArray("3d")
 [application/run/low_processor_mode]
 value=true
 
-# ✅ SCÈNE PRINCIPALE — LA LIGNE QUI MANQUAIT !
+# ✅ SCÈNE PRINCIPALE — FICHIER EXISTE VRAIMENT
 [application/run]
 main_scene="res://scenes/main.tscn"
 

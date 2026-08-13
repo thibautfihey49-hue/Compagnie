@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-echo "🤖 1/4 : Import"
+echo "🤖 1/4 : Import ressources + nouvelle scène"
 rm -rf .godot/ export_presets.cfg
-timeout 60 godot --headless --path . --import 2>/dev/null || true
+timeout 90 godot --headless --path . --import 2>&1 | tail -5 || true
 echo "✅ Import OK"
 
 echo ""
@@ -17,7 +17,7 @@ keytool -genkey -noprompt -alias compagnie \
 echo "✅ Keystore OK"
 
 echo ""
-echo "🤖 3/4 : Preset SANS COMMENTAIRES"
+echo "🤖 3/4 : Preset"
 cat > export_presets.cfg << 'CFG'
 [preset.0]
 name="Android"
@@ -58,13 +58,17 @@ CFG
 echo "✅ Preset OK"
 
 echo ""
-echo "🤖 4/4 : 🚀 Export DEBUG"
+echo "🤖 4/4 : 🚀 Export APK FINAL"
 godot --headless --path . --export-debug "Android" Compagnie3D.apk 2>&1 | grep -v "Custom cursor\|Blender path" | tail -10
 
 if [ -f Compagnie3D.apk ]; then
   echo ""
-  echo "🎉🎉🎉 APK FINAL PRÊT ! 🎉🎉🎉"
+  echo "🎉🎉🎉 APK FINAL GÉNÉRÉ ! 🎉🎉🎉"
   ls -lh Compagnie3D.apk
+  echo ""
+  echo "👉 Copie ce fichier sur ton téléphone"
+  echo "👉 Désinstalle l'ancienne version si besoin"
+  echo "👉 Installe → 🐱 ÇA MARCHE ENFIN !"
 else
   echo "❌ ÉCHEC"
   exit 1
