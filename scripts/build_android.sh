@@ -1,13 +1,19 @@
 #!/bin/bash
 set -e
 
-echo "🤖 1/4 : Import ressources + nouvelle scène"
+echo ""
+echo "🤖 1/4 : Import (génère .import)"
 rm -rf .godot/ export_presets.cfg
-timeout 90 godot --headless --path . --import 2>&1 | tail -5 || true
+timeout 90 godot --headless --path . --import 2>&1 | tail -3 || true
 echo "✅ Import OK"
 
 echo ""
-echo "🤖 2/4 : Keystore PKCS12"
+echo "🤖 2/4 : Vérifier que main_scene est BIEN lu par Godot"
+grep "main_scene" project.godot
+ls -la scenes/main.tscn
+
+echo ""
+echo "🤖 3/4 : Keystore PKCS12"
 rm -f compagnie.keystore
 keytool -genkey -noprompt -alias compagnie \
   -dname "CN=Compagnie, O=Compagnie, C=FR" \
@@ -17,7 +23,7 @@ keytool -genkey -noprompt -alias compagnie \
 echo "✅ Keystore OK"
 
 echo ""
-echo "🤖 3/4 : Preset"
+echo "🤖 4/4 : Preset + Export APK"
 cat > export_presets.cfg << 'CFG'
 [preset.0]
 name="Android"
@@ -44,31 +50,20 @@ package/signing_release_user="compagnie"
 package/signing_release_password="azerty123"
 architectures/armeabi-v7a=true
 architectures/arm64-v8a=true
-architectures/x86=false
-architectures/x86_64=false
-graphics_driver/vulkan=false
 graphics_driver/opengl3=true
 screen/immersive_mode=true
-screen/support_small=true
-screen/support_normal=true
-screen/support_large=true
-screen/support_xlarge=true
 textures/etc2=true
 CFG
-echo "✅ Preset OK"
 
-echo ""
-echo "🤖 4/4 : 🚀 Export APK FINAL"
-godot --headless --path . --export-debug "Android" Compagnie3D.apk 2>&1 | grep -v "Custom cursor\|Blender path" | tail -10
+godot --headless --path . --export-debug "Android" Compagnie3D.apk 2>&1 | grep -v "Custom cursor\|Blender path" | tail -8
 
 if [ -f Compagnie3D.apk ]; then
   echo ""
-  echo "🎉🎉🎉 APK FINAL GÉNÉRÉ ! 🎉🎉🎉"
+  echo "🎉🎉🎉 APK FINAL PRÊT ! 🎉🎉🎉"
   ls -lh Compagnie3D.apk
   echo ""
-  echo "👉 Copie ce fichier sur ton téléphone"
-  echo "👉 Désinstalle l'ancienne version si besoin"
-  echo "👉 Installe → 🐱 ÇA MARCHE ENFIN !"
+  echo "⚠️  TRÈS IMPORTANT : DÉSINSTALLE L'ANCIENNE APK SUR TON TÉLÉPHONE AVANT !"
+  echo "👉 Copier → Installer → 🐱 ÇA MARCHE ENFIN !"
 else
   echo "❌ ÉCHEC"
   exit 1

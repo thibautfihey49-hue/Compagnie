@@ -1,32 +1,22 @@
 [application]
-config_version=5
-[application/config/name]
-value="compagnie3d"
-[application/config/features]
-value=PackedStringArray("3d")
-[application/run/low_processor_mode]
-value=true
 
-# ✅ SCÈNE PRINCIPALE — FICHIER EXISTE VRAIMENT
-[application/run]
-main_scene="res://scenes/main.tscn"
+config/name="compagnie3d"
+config/features=PackedStringArray("3d")
+run/low_processor_mode=true
+
+# ✅ LA BONNE LIGNE QUI MANQUAIT DEPUIS LE DÉBUT
+run/main_scene="res://scenes/main.tscn"
 
 [display]
-[display/window/size/viewport_width]
-value=720
-[display/window/size/viewport_height]
-value=1280
-[display/window/size/resizable]
-value=false
-[display/window/stretch/mode]
-value="viewport"
+
+window/size/viewport_width=720
+window/size/viewport_height=1280
+window/size/resizable=false
+window/stretch/mode="viewport"
 
 [rendering]
-[rendering/renderer/rendering_method]
-value="gl_compatibility"
-[rendering/renderer/rendering_method.mobile]
-value="gl_compatibility"
-[rendering/environment/default_environment]
-value="res://environment.tres"
-[rendering/textures/vram_compression]
-import_etc2_astc=true
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/default_environment="res://environment.tres"
+textures/vram_compression/import_etc2_astc=true

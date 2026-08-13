@@ -1,7 +1,4 @@
-extends Node3D
+extends Node2D
 
 func _ready():
-    print("✅ Compagnie 3D DÉMARRÉ !")
-
-func _process(delta):
-    $Soleil.rotate_y(delta * 1.5)
+    print("✅ COMPAGNIE 3D DÉMARRÉ")
