@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🎮 Install Godot 4.3 (syntaxe export plus fiable)
+      - name: Install Godot 4.3
         run: |
           GV="4.3-stable"
           wget "https://github.com/godotengine/godot/releases/download/${GV}/Godot_v${GV}_linux.x86_64.zip" -O godot.zip
@@ -20,7 +20,7 @@ jobs:
           sudo mv Godot_v${GV}_linux.x86_64 /usr/local/bin/godot
           godot --version
 
-      - name: 📦 Templates Android 4.3
+      - name: Templates Android 4.3
         run: |
           GV="4.3-stable"
           GF="4.3.stable"
@@ -29,22 +29,13 @@ jobs:
           mkdir -p "$DST"
           unzip -q tpl.tpz -d ./tmp
           cp ./tmp/templates/* "$DST/"
-          ls -la "$DST"
 
-      - name: 🔑 Keystore
-        run: |
-          keytool -genkey -noprompt -alias compagnie \
-            -dname "CN=Compagnie, O=Compagnie, C=FR" \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -keystore compagnie.keystore \
-            -storepass 123456 -keypass 123456 -storetype JKS
-
-      - name: 📦 Build APK
+      - name: Build APK DEBUG
         run: bash scripts/build_android.sh
 
-      - name: 📤 Upload APK
+      - name: Upload APK DEBUG
         uses: actions/upload-artifact@v4
         with:
-          name: Compagnie3D-APK
+          name: Compagnie3D-APK-DEBUG
           path: Compagnie3D.apk
           retention-days: 30

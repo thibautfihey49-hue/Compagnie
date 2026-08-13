@@ -1,12 +1,9 @@
 [application]
 config_version=5
-
 [application/config/name]
 value="compagnie3d"
-
 [application/config/features]
 value=PackedStringArray("3d")
-
 [application/run/low_processor_mode]
 value=true
 
@@ -27,6 +24,5 @@ value="gl_compatibility"
 value="gl_compatibility"
 [rendering/environment/default_environment]
 value="res://environment.tres"
-
 [rendering/textures/vram_compression]
 import_etc2_astc=true
