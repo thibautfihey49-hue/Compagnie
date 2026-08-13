@@ -1,64 +1,79 @@
 #!/bin/bash
 set -e
 
-echo "🤖 Configuration des variables d'environnement Godot..."
-
-# ✅ Variables d'environnement que Godot lit DIRECTEMENT
-export GODOT_EXPORT_PRESET_NAME="Android"
-export GODOT_EXPORT_PRESET_PLATFORM="Android"
-export GODOT_ANDROID_PACKAGE_NAME="fr.compagnie3d.app"
-export GODOT_ANDROID_VERSION_CODE="1"
-export GODOT_ANDROID_VERSION_NAME="1.0.0"
-export GODOT_ANDROID_MIN_SDK="26"
-export GODOT_ANDROID_TARGET_SDK="34"
-export GODOT_ANDROID_ARCH="arm64-v8a"
-export GODOT_ANDROID_KEYSTORE="compagnie.keystore"
-export GODOT_ANDROID_KEYSTORE_USER="compagnie"
-export GODOT_ANDROID_KEYSTORE_PASSWORD="123456"
-
-echo "✅ Variables configurées :"
-echo "   Package : $GODOT_ANDROID_PACKAGE_NAME"
-echo "   Version : $GODOT_ANDROID_VERSION_NAME"
-echo "   Arch    : $GODOT_ANDROID_ARCH"
-
-echo ""
-echo "🤖 1/4 : Création du preset PAR GODOT (pas manuel)"
-# Supprimer l'ancien preset pour que Godot le régénère
-rm -f export_presets.cfg
-
-# Créer un preset MINIMAL que Godot complète
-cat > export_presets.cfg << 'CFG'
+echo "🤖 1/5 : PRESET PARFAIT — TOUS champs obligatoires au BON ENDROIT"
+cat > export_presets.cfg << 'CFG_EOF'
 [preset.0]
 name="Android"
 platform="Android"
 runnable=true
+custom_features=""
+# ✅ CES 3 CHAMPS SONT OBLIGATOIRES DANS [preset.0] (PAS DANS .options)
+export_filter="all"
+include_filter=""
+exclude_filter=""
 export_path="Compagnie3D.apk"
+encryption_include_filters=""
+encryption_exclude_filters=""
+patch_package=false
+modify_package=false
 
 [preset.0.options]
 package/unique_name="fr.compagnie3d.app"
+package/name="Compagnie 3D"
 package/min_sdk=26
 package/target_sdk=34
 version/code=1
 version/name="1.0.0"
 package/release=true
+package/signing_release_key_store="compagnie.keystore"
+package/signing_release_user="compagnie"
+package/signing_release_password="123456"
+package/signing_debug_key_store=""
+package/signing_debug_user=""
+package/signing_debug_password=""
+architectures/armeabi-v7a=false
 architectures/arm64-v8a=true
+architectures/x86=false
+architectures/x86_64=false
+graphics_driver/vulkan=false
 graphics_driver/opengl3=true
-CFG
-
-echo "✅ Preset minimal écrit"
+screen/immersive_mode=true
+screen/support_small=true
+screen/support_normal=true
+screen/support_large=true
+screen/support_xlarge=true
+textures/bptc=false
+textures/etc2=true
+textures/s3tc=false
+textures/astc=false
+CFG_EOF
+echo "✅ Preset PARFAIT écrit"
 
 echo ""
-echo "🤖 2/4 : Warm-up éditeur — Godot complète le preset"
+echo "🤖 2/5 : Vérification templates"
+TPL_DIR="$HOME/.local/share/godot/export_templates/4.2.2.stable"
+[ -f "$TPL_DIR/android_release.apk" ] && echo "✅ Templates OK" || { echo "❌ templates"; exit 1; }
+
+echo ""
+echo "🤖 3/5 : Keystore JKS"
+rm -f compagnie.keystore
+keytool -genkey -noprompt -alias compagnie \
+  -dname "CN=Compagnie, O=Compagnie, C=FR" \
+  -keyalg RSA -keysize 2048 -validity 10000 \
+  -keystore compagnie.keystore \
+  -storepass 123456 -keypass 123456 -storetype JKS 2>/dev/null
+echo "✅ Keystore OK"
+
+echo ""
+echo "🤖 4/5 : Warm-up éditeur (preset DÉJÀ présent)"
 rm -rf .godot/
-timeout 90 godot --headless --path . --editor --quit 2>&1 | tail -5 || true
+timeout 90 godot --headless --path . --editor --quit 2>&1 | tail -3 || true
+echo "✅ Warm-up OK"
 
 echo ""
-echo "🤖 3/4 : Vérification du preset complété par Godot"
-cat export_presets.cfg | grep -E "package/unique_name|architectures"
-
-echo ""
-echo "🤖 4/4 : 🚀 Export APK..."
-godot --headless --path . --export-release "Android" Compagnie3D.apk 2>&1
+echo "🤖 5/5 : 🚀 EXPORT RELEASE"
+godot --headless --path . --export-release "Android" Compagnie3D.apk 2>&1 | tail -10
 
 if [ -f Compagnie3D.apk ]; then
   echo ""
@@ -66,13 +81,7 @@ if [ -f Compagnie3D.apk ]; then
   ls -lh Compagnie3D.apk
 else
   echo ""
-  echo "❌ ÉCHEC — Tentative avec export-debug..."
-  godot --headless --path . --export-debug "Android" Compagnie3D.apk 2>&1
-  if [ -f Compagnie3D.apk ]; then
-    echo "✅ APK DEBUG généré (au moins !)"
-    ls -lh Compagnie3D.apk
-  else
-    echo "❌ ÉCHEC TOTAL"
-    exit 1
-  fi
+  echo "❌ Release échoué → Tentative DEBUG"
+  godot --headless --path . --export-debug "Android" Compagnie3D.apk 2>&1 | tail -10
+  [ -f Compagnie3D.apk ] && { echo "✅ APK DEBUG OK"; ls -lh Compagnie3D.apk; } || { echo "❌ ÉCHEC TOTAL"; exit 1; }
 fi
