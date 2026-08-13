@@ -7,19 +7,17 @@ timeout 60 godot --headless --path . --import 2>/dev/null || true
 echo "✅ Import OK"
 
 echo ""
-echo "🤖 2/4 : Keystore PKCS12 — storepass=keypass"
+echo "🤖 2/4 : Keystore PKCS12"
 rm -f compagnie.keystore
 keytool -genkey -noprompt -alias compagnie \
   -dname "CN=Compagnie, O=Compagnie, C=FR" \
   -keyalg RSA -keysize 2048 -validity 10000 \
   -keystore compagnie.keystore \
-  -storetype PKCS12 \
-  -storepass "azerty123" \
-  -keypass "azerty123" 2>/dev/null
+  -storetype PKCS12 -storepass "azerty123" -keypass "azerty123" 2>/dev/null
 echo "✅ Keystore OK"
 
 echo ""
-echo "🤖 3/4 : Preset — AUCUN COMMENTAIRE DEDANS"
+echo "🤖 3/4 : Preset SANS COMMENTAIRES"
 cat > export_presets.cfg << 'CFG'
 [preset.0]
 name="Android"
@@ -65,7 +63,7 @@ godot --headless --path . --export-debug "Android" Compagnie3D.apk 2>&1 | grep -
 
 if [ -f Compagnie3D.apk ]; then
   echo ""
-  echo "🎉🎉🎉 APK DEBUG GÉNÉRÉ ! 🎉🎉🎉"
+  echo "🎉🎉🎉 APK FINAL PRÊT ! 🎉🎉🎉"
   ls -lh Compagnie3D.apk
 else
   echo "❌ ÉCHEC"

@@ -24,11 +24,11 @@ jobs:
           mkdir -p "$DST"
           unzip -q tpl.tpz -d ./tmp
           cp ./tmp/templates/* "$DST/"
-      - name: Build APK DEBUG
+      - name: Build APK
         run: bash scripts/build_android.sh
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Compagnie3D-APK-DEBUG
+          name: Compagnie3D-APK-FINAL
           path: Compagnie3D.apk
           retention-days: 30
