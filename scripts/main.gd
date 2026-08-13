@@ -4,5 +4,5 @@ extends Node2D
 @onready var ui: Control = $UI
 
 func _ready() -> void:
-	print("✅ Interface connectée à l'animal")
+	print("🚀 COMPAGNIE 3D DÉMARRÉE")
 	ui.connecter_animal(animal)

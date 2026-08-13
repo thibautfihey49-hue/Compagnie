@@ -2,11 +2,11 @@
 
 [ext_resource type="Script" path="res://scripts/animal.gd" id="1"]
 
-[sub_resource type="SphereMesh" id="corps_mesh"]
+[sub_resource type="SphereMesh" id="corps"]
 radius = 0.5
 height = 1.0
 
-[sub_resource type="SphereMesh" id="oeil_mesh"]
+[sub_resource type="SphereMesh" id="oeil"]
 radius = 0.08
 
 [sub_resource type="StandardMaterial3D" id="corps_mat"]
@@ -16,45 +16,40 @@ roughness = 0.8
 [sub_resource type="StandardMaterial3D" id="oeil_mat"]
 albedo_color = Color(0.1, 0.1, 0.1)
 
-[sub_resource type="Animation" id="anim_evolution"]
+[sub_resource type="Animation" id="anim_evol"]
 resource_name = "evolution"
 length = 1.0
 tracks/0/type = "value"
 tracks/0/path = NodePath(".scale")
-tracks/0/interp = 1
-tracks/0/keys = {"times": PackedFloat32Array(0, 0.5, 1), "values": [Vector3(0.8, 0.8, 0.8), Vector3(1.2, 1.2, 1.2), Vector3(1, 1, 1)]}
+tracks/0/keys = {"times": [0, 0.5, 1], "values": [Vector3(0.8,0.8,0.8), Vector3(1.2,1.2,1.2), Vector3(1,1,1)]}
 
 [sub_resource type="Animation" id="anim_manger"]
 resource_name = "manger"
 length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("Modele/Corps:scale")
-tracks/0/interp = 1
-tracks/0/keys = {"times": PackedFloat32Array(0, 0.25, 0.5), "values": [Vector3(1,1,1), Vector3(1.1,0.95,1.1), Vector3(1,1,1)]}
+tracks/0/keys = {"times": [0, 0.25, 0.5], "values": [Vector3(1,1,1), Vector3(1.1,0.95,1.1), Vector3(1,1,1)]}
 
-[sub_resource type="Animation" id="anim_sauter"]
+[sub_resource type="Animation" id="anim_saut"]
 resource_name = "sauter"
 length = 0.6
 tracks/0/type = "value"
 tracks/0/path = NodePath("Modele/Corps:position")
-tracks/0/interp = 1
-tracks/0/keys = {"times": PackedFloat32Array(0, 0.3, 0.6), "values": [Vector3(0,0,0), Vector3(0,0.4,0), Vector3(0,0,0)]}
+tracks/0/keys = {"times": [0, 0.3, 0.6], "values": [Vector3.ZERO, Vector3(0,0.4,0), Vector3.ZERO]}
 
-[sub_resource type="Animation" id="anim_dormir"]
+[sub_resource type="Animation" id="anim_dort"]
 resource_name = "dormir"
 length = 2.0
 tracks/0/type = "value"
 tracks/0/path = NodePath("Modele/Corps:rotation/x")
-tracks/0/interp = 1
-tracks/0/keys = {"times": PackedFloat32Array(0, 1), "values": [0.0, -0.3]}
+tracks/0/keys = {"times": [0, 1], "values": [0, -0.3]}
 
-[sub_resource type="Animation" id="anim_soigner"]
+[sub_resource type="Animation" id="anim_soin"]
 resource_name = "soigner"
 length = 0.8
 tracks/0/type = "value"
 tracks/0/path = NodePath("Modele/Corps:scale")
-tracks/0/interp = 1
-tracks/0/keys = {"times": PackedFloat32Array(0, 0.4, 0.8), "values": [Vector3(1,1,1), Vector3(1.1,1.1,1.1), Vector3(1,1,1)]}
+tracks/0/keys = {"times": [0, 0.4, 0.8], "values": [Vector3.ONE, Vector3(1.1,1.1,1.1), Vector3.ONE]}
 
 [node name="Animal" type="Node3D"]
 script = ExtResource("1")
@@ -62,7 +57,7 @@ script = ExtResource("1")
 [node name="Modele" type="Node3D" parent="."]
 
 [node name="Corps" type="MeshInstance3D" parent="Modele"]
-mesh = SubResource("corps_mesh")
+mesh = SubResource("corps")
 material_override = SubResource("corps_mat")
 
 [node name="Yeux" type="Node3D" parent="Modele"]
@@ -70,17 +65,17 @@ position = Vector3(0, 0.15, 0.45)
 
 [node name="Gauche" type="MeshInstance3D" parent="Modele/Yeux"]
 position = Vector3(-0.2, 0, 0)
-mesh = SubResource("oeil_mesh")
+mesh = SubResource("oeil")
 material_override = SubResource("oeil_mat")
 
 [node name="Droit" type="MeshInstance3D" parent="Modele/Yeux"]
 position = Vector3(0.2, 0, 0)
-mesh = SubResource("oeil_mesh")
+mesh = SubResource("oeil")
 material_override = SubResource("oeil_mat")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/evolution = SubResource("anim_evolution")
+anims/evolution = SubResource("anim_evol")
 anims/manger = SubResource("anim_manger")
-anims/sauter = SubResource("anim_sauter")
-anims/dormir = SubResource("anim_dormir")
-anims/soigner = SubResource("anim_soigner")
+anims/sauter = SubResource("anim_saut")
+anims/dormir = SubResource("anim_dort")
+anims/soigner = SubResource("anim_soin")

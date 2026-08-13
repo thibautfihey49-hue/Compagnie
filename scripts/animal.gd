@@ -26,17 +26,16 @@ const HEURES_PAR_ETAPE: float = 180.0
 
 @onready var modele: Node3D = $Modele
 @onready var corps: MeshInstance3D = $Modele/Corps
-@onready var yeux_gauche: MeshInstance3D = $Modele/Yeux/Gauche
-@onready var yeux_droit: MeshInstance3D = $Modele/Yeux/Droit
 @onready var animation: AnimationPlayer = $AnimationPlayer
 
 func _ready() -> void:
-	print("🐱 COMPAGNIE 3D DÉMARRÉ")
+	print("🐱 ANIMAL CRÉÉ — Éclosion dans 3s")
 	await get_tree().create_timer(3.0).timeout
 	_evoluer_vers(Etat.BEBE)
 
 func _process(delta: float) -> void:
 	if etat == Etat.OEUF:
+		modele.scale = Vector3.ONE * (0.5 + sin(OS.get_ticks_msec() * 0.005) * 0.03)
 		return
 
 	age_heures += delta / 3600.0 * 60.0 * facteur_temps
@@ -57,76 +56,48 @@ func _process(delta: float) -> void:
 	besoins_mis_a_jour.emit(round(faim), round(bonheur), round(sante), round(energie))
 
 func _verifier_alertes() -> void:
-	if faim < SEUIL_CRITIQUE:
-		alerte.emit("faim", faim)
-	elif faim < SEUIL_ALERTE:
-		alerte.emit("faim", faim)
-
-	if bonheur < SEUIL_CRITIQUE:
-		alerte.emit("bonheur", bonheur)
-	elif bonheur < SEUIL_ALERTE:
-		alerte.emit("bonheur", bonheur)
-
-	if sante < SEUIL_CRITIQUE:
-		alerte.emit("sante", sante)
-
-	if energie < SEUIL_CRITIQUE:
-		alerte.emit("energie", energie)
+	if faim < SEUIL_CRITIQUE: alerte.emit("faim", faim)
+	elif faim < SEUIL_ALERTE: alerte.emit("faim", faim)
+	if bonheur < SEUIL_CRITIQUE: alerte.emit("bonheur", bonheur)
+	elif bonheur < SEUIL_ALERTE: alerte.emit("bonheur", bonheur)
+	if sante < SEUIL_CRITIQUE: alerte.emit("sante", sante)
+	if energie < SEUIL_CRITIQUE: alerte.emit("energie", energie)
 
 func _verifier_evolution() -> void:
 	match etat:
-		Etat.BEBE:
-			if age_heures >= HEURES_PAR_ETAPE:
-				_evoluer_vers(Etat.JUVENILE)
-		Etat.JUVENILE:
-			if age_heures >= HEURES_PAR_ETAPE * 2.0:
-				_evoluer_vers(Etat.ADULTE)
-		Etat.ADULTE:
-			if age_heures >= HEURES_PAR_ETAPE * 4.0:
-				_evoluer_vers(Etat.SENIOR)
+		Etat.BEBE: if age_heures >= HEURES_PAR_ETAPE: _evoluer_vers(Etat.JUVENILE)
+		Etat.JUVENILE: if age_heures >= HEURES_PAR_ETAPE*2: _evoluer_vers(Etat.ADULTE)
+		Etat.ADULTE: if age_heures >= HEURES_PAR_ETAPE*4: _evoluer_vers(Etat.SENIOR)
 
 func _evoluer_vers(nouvel_etat: Etat) -> void:
 	etat = nouvel_etat
 	var noms = ["ŒUF", "BÉBÉ", "JUVÉNILE", "ADULTE", "SENIOR"]
 	var tailles = [0.5, 0.7, 1.0, 1.3, 1.1]
-	var couleurs = [
-		Color(0.95, 0.9, 0.8),
-		Color(1.0, 0.8, 0.5),
-		Color(1.0, 0.65, 0.3),
-		Color(0.9, 0.45, 0.1),
-		Color(0.6, 0.5, 0.4)
-	]
-
+	var couleurs = [Color(0.95,0.9,0.8), Color(1,0.8,0.5), Color(1,0.65,0.3), Color(0.9,0.45,0.1), Color(0.6,0.5,0.4)]
 	modele.scale = Vector3.ONE * tailles[nouvel_etat]
 	if corps and corps.material_override:
 		corps.material_override.albedo_color = couleurs[nouvel_etat]
-
 	print("✨ ÉVOLUTION : ", noms[nouvel_etat])
 	evolution.emit(noms[nouvel_etat])
-	if animation:
-		animation.play("evolution")
+	if animation: animation.play("evolution")
 
 func nourrir() -> void:
 	faim = min(100.0, faim + 32.0)
-	sante = min(100.0, sante + 1.5) if faim > 50.0 else sante
-	if animation:
-		animation.play("manger")
+	sante = min(100.0, sante + 1.5) if faim > 50 else sante
+	if animation: animation.play("manger")
 
 func jouer() -> void:
 	bonheur = min(100.0, bonheur + 28.0)
 	energie = max(0.0, energie - 8.0)
 	faim = max(0.0, faim - 5.0)
-	if animation:
-		animation.play("sauter")
+	if animation: animation.play("sauter")
 
 func dormir() -> void:
 	energie = min(100.0, energie + 45.0)
 	sante = min(100.0, sante + 4.0)
-	if animation:
-		animation.play("dormir")
+	if animation: animation.play("dormir")
 
 func soigner() -> void:
 	sante = min(100.0, sante + 50.0)
 	bonheur = max(0.0, bonheur - 5.0)
-	if animation:
-		animation.play("soigner")
+	if animation: animation.play("soigner")
