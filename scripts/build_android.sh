@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🤖 Étape 1/4 : Génération preset Android"
+echo "🤖 Étape 1/5 : CRÉER export_presets.cfg AVANT le warm-up (OBLIGATOIRE)"
 cat > export_presets.cfg << 'CFG_EOF'
 [preset.0]
 name="Android"
@@ -69,33 +69,42 @@ deploy_to_remote=false
 custom_build/use_custom_build=false
 custom_build/export_format=0
 CFG_EOF
-
-echo "✅ Preset OK"
-
-echo ""
-echo "🤖 Étape 2/4 : WARM-UP ÉDITEUR (OBLIGATOIRE) — importe toutes les ressources"
-echo "   → C'est l'étape qui manquait depuis le début !"
-timeout 60 godot --headless --editor --quit 2>&1 | tail -20 || true
-echo "✅ Warm-up terminé — cache .godot/ créé"
+echo "✅ Preset écrit AVANT warm-up"
 
 echo ""
-echo "🤖 Étape 3/4 : Vérification preset"
-cat export_presets.cfg | grep "package/"
+echo "🤖 Étape 2/5 : VÉRIFIER templates Android au BON ENDROIT"
+TPL_DIR="$HOME/.local/share/godot/export_templates/4.2.2.stable"
+ls -la "$TPL_DIR/"
+if [ ! -f "$TPL_DIR/android_release.apk" ]; then
+  echo "❌ android_release.apk MANQUANT — on le recopie"
+  mkdir -p "$TPL_DIR"
+  cp ./tmp/templates/* "$TPL_DIR/" 2>/dev/null || true
+  ls -la "$TPL_DIR/"
+fi
+echo "✅ Templates OK"
 
 echo ""
-echo "🤖 Étape 4/4 : Export APK..."
-godot --headless --path . --export-release "Android" Compagnie3D.apk 2>&1 | tail -30
+echo "🤖 Étape 3/5 : WARM-UP ÉDITEUR — importe ressources + charge preset"
+rm -rf .godot/
+timeout 90 godot --headless --path . --editor --quit 2>&1 | tail -10 || true
+echo "✅ Warm-up terminé"
+
+echo ""
+echo "🤖 Étape 4/5 : Vérifier preset chargé"
+grep "package/unique_name" export_presets.cfg
+
+echo ""
+echo "🤖 Étape 5/5 : EXPORT — utiliser --export (PAS --export-release, cassé en CI 4.2)"
+godot --headless --path . --export "Android" Compagnie3D.apk 2>&1 | tail -20
 
 if [ -f Compagnie3D.apk ]; then
   echo ""
-  echo "🎉🎉🎉 APK GÉNÉRÉ AVEC SUCCÈS ! 🎉🎉🎉"
-  ls -la Compagnie3D.apk
+  echo "🎉🎉🎉 APK GÉNÉRÉ ! TAILLE :"
+  ls -lh Compagnie3D.apk
 else
   echo ""
-  echo "❌ ÉCHEC — Liste des fichiers pour debug :"
-  ls -la
-  echo ""
-  echo "Contenu .godot/ :"
-  ls -la .godot/ 2>/dev/null || echo "Pas de .godot/"
+  echo "❌ ÉCHEC — debug :"
+  ls -la .godot/editor/ 2>/dev/null
+  cat .godot/editor/project_metadata.cfg 2>/dev/null || true
   exit 1
 fi
