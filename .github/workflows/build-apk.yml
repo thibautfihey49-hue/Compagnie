@@ -11,19 +11,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Godot 4.2.2
+      - name: 🎮 Install Godot 4.3 (syntaxe export plus fiable)
         run: |
-          GV="4.2.2-stable"
+          GV="4.3-stable"
           wget "https://github.com/godotengine/godot/releases/download/${GV}/Godot_v${GV}_linux.x86_64.zip" -O godot.zip
           unzip -q godot.zip
           chmod +x Godot_v${GV}_linux.x86_64
           sudo mv Godot_v${GV}_linux.x86_64 /usr/local/bin/godot
           godot --version
 
-      - name: Install Android templates
+      - name: 📦 Templates Android 4.3
         run: |
-          GV="4.2.2-stable"
-          GF="4.2.2.stable"
+          GV="4.3-stable"
+          GF="4.3.stable"
           wget "https://github.com/godotengine/godot/releases/download/${GV}/Godot_v${GV}_export_templates.tpz" -O tpl.tpz
           DST="$HOME/.local/share/godot/export_templates/${GF}"
           mkdir -p "$DST"
@@ -31,7 +31,7 @@ jobs:
           cp ./tmp/templates/* "$DST/"
           ls -la "$DST"
 
-      - name: Create keystore
+      - name: 🔑 Keystore
         run: |
           keytool -genkey -noprompt -alias compagnie \
             -dname "CN=Compagnie, O=Compagnie, C=FR" \
@@ -39,10 +39,10 @@ jobs:
             -keystore compagnie.keystore \
             -storepass 123456 -keypass 123456 -storetype JKS
 
-      - name: Build APK
+      - name: 📦 Build APK
         run: bash scripts/build_android.sh
 
-      - name: Upload APK
+      - name: 📤 Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Compagnie3D-APK

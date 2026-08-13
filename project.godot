@@ -28,6 +28,5 @@ value="gl_compatibility"
 [rendering/environment/default_environment]
 value="res://environment.tres"
 
-# ✅ Bug #119895 — ETC2 obligatoire pour exporter Android
 [rendering/textures/vram_compression]
 import_etc2_astc=true
