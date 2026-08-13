@@ -28,6 +28,6 @@ value="gl_compatibility"
 [rendering/environment/default_environment]
 value="res://environment.tres"
 
-# 🔴 LE CORRECTIF QUI RÉSOUT TOUT — bug Godot #119895
+# ✅ Correctif bug #119895 — ETC2 obligatoire pour Android
 [rendering/textures/vram_compression]
 import_etc2_astc=true

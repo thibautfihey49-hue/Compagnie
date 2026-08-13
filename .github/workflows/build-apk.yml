@@ -9,10 +9,9 @@ jobs:
   build-apk:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: 🎮 Install GodOT 4.2.2 STABLE (FORMAT CONNU)
+      - name: Install Godot 4.2.2
         run: |
           GV="4.2.2-stable"
           wget "https://github.com/godotengine/godot/releases/download/${GV}/Godot_v${GV}_linux.x86_64.zip" -O godot.zip
@@ -21,7 +20,7 @@ jobs:
           sudo mv Godot_v${GV}_linux.x86_64 /usr/local/bin/godot
           godot --version
 
-      - name: 📦 Install templates 4.2.2
+      - name: Install Android templates
         run: |
           GV="4.2.2-stable"
           GF="4.2.2.stable"
@@ -32,18 +31,15 @@ jobs:
           cp ./tmp/templates/* "$DST/"
           ls -la "$DST"
 
-      - name: Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Keystore
+      - name: Create keystore
         run: |
           keytool -genkey -noprompt -alias compagnie \
             -dname "CN=Compagnie, O=Compagnie, C=FR" \
-            -keyalg RSA -keysize 2048 \
+            -keyalg RSA -keysize 2048 -validity 10000 \
             -keystore compagnie.keystore \
-            -storepass 123456 -keypass 123456 -validity 10000
+            -storepass 123456 -keypass 123456 -storetype JKS
 
-      - name: 🚀 Build APK
+      - name: Build APK
         run: bash scripts/build_android.sh
 
       - name: Upload APK
