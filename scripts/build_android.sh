@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🤖 Étape 1/5 : CRÉER export_presets.cfg AVANT le warm-up (OBLIGATOIRE)"
+echo "🤖 1/5 : Preset Android AVANT warm-up"
 cat > export_presets.cfg << 'CFG_EOF'
 [preset.0]
 name="Android"
@@ -46,13 +46,10 @@ screen/support_large=true
 screen/support_xlarge=true
 screen/orientation=0
 user_data_backup=true
-enable_high_end_graphics=false
 internet_permission=false
 access_network_state_permission=false
 access_wifi_state_permission=false
 vibrate_permission=false
-post_notifications_permission=false
-external_storage_permission=0
 launcher_icons/main_192x192=""
 launcher_icons/main_432x432=""
 launcher_icons/adaptive_foreground_432x432=""
@@ -67,44 +64,39 @@ textures/astc=false
 one_shot_deploy=false
 deploy_to_remote=false
 custom_build/use_custom_build=false
-custom_build/export_format=0
 CFG_EOF
-echo "✅ Preset écrit AVANT warm-up"
+echo "✅ Preset OK"
 
 echo ""
-echo "🤖 Étape 2/5 : VÉRIFIER templates Android au BON ENDROIT"
+echo "🤖 2/5 : Templates Android"
 TPL_DIR="$HOME/.local/share/godot/export_templates/4.2.2.stable"
-ls -la "$TPL_DIR/"
-if [ ! -f "$TPL_DIR/android_release.apk" ]; then
-  echo "❌ android_release.apk MANQUANT — on le recopie"
-  mkdir -p "$TPL_DIR"
-  cp ./tmp/templates/* "$TPL_DIR/" 2>/dev/null || true
-  ls -la "$TPL_DIR/"
-fi
-echo "✅ Templates OK"
+[ -f "$TPL_DIR/android_release.apk" ] && echo "✅ Templates OK" || { echo "❌ templates"; exit 1; }
 
 echo ""
-echo "🤖 Étape 3/5 : WARM-UP ÉDITEUR — importe ressources + charge preset"
+echo "🤖 3/5 : Keystore JKS (storepass == keypass)"
+rm -f compagnie.keystore
+keytool -genkey -noprompt -alias compagnie \
+  -dname "CN=Compagnie, O=Compagnie, C=FR" \
+  -keyalg RSA -keysize 2048 -validity 10000 \
+  -keystore compagnie.keystore \
+  -storetype JKS -storepass 123456 -keypass 123456
+echo "✅ Keystore JKS OK"
+
+echo ""
+echo "🤖 4/5 : Warm-up éditeur (importe ressources + charge preset)"
 rm -rf .godot/
-timeout 90 godot --headless --path . --editor --quit 2>&1 | tail -10 || true
-echo "✅ Warm-up terminé"
+timeout 90 godot --headless --path . --editor --quit 2>&1 | tail -5 || true
+echo "✅ Warm-up OK"
 
 echo ""
-echo "🤖 Étape 4/5 : Vérifier preset chargé"
-grep "package/unique_name" export_presets.cfg
-
-echo ""
-echo "🤖 Étape 5/5 : EXPORT — utiliser --export (PAS --export-release, cassé en CI 4.2)"
-godot --headless --path . --export "Android" Compagnie3D.apk 2>&1 | tail -20
+echo "🤖 5/5 : 🚀 EXPORT RELEASE (Godot 4 syntaxe)"
+godot --headless --path . --export-release "Android" Compagnie3D.apk 2>&1 | tail -15
 
 if [ -f Compagnie3D.apk ]; then
   echo ""
-  echo "🎉🎉🎉 APK GÉNÉRÉ ! TAILLE :"
+  echo "🎉🎉🎉 APK GÉNÉRÉ AVEC SUCCÈS ! 🎉🎉🎉"
   ls -lh Compagnie3D.apk
 else
-  echo ""
-  echo "❌ ÉCHEC — debug :"
-  ls -la .godot/editor/ 2>/dev/null
-  cat .godot/editor/project_metadata.cfg 2>/dev/null || true
+  echo "❌ ÉCHEC"
   exit 1
 fi

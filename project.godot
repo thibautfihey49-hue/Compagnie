@@ -27,3 +27,7 @@ value="gl_compatibility"
 value="gl_compatibility"
 [rendering/environment/default_environment]
 value="res://environment.tres"
+
+# 🔴 LE CORRECTIF QUI RÉSOUT TOUT — bug Godot #119895
+[rendering/textures/vram_compression]
+import_etc2_astc=true
