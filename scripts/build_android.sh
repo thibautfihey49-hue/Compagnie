@@ -1,13 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
+echo "🤖 1/4 : Import des ressources"
 rm -rf .godot export_presets.cfg
 timeout 90 godot --headless --path . --import >/dev/null 2>&1 || true
 
+echo "✅ Vérification de la scène principale..."
 grep -q 'run/main_scene="res://scenes/main.tscn"' project.godot
 test -f scenes/main.tscn
 test -f scripts/main.gd
+echo "✅ Scène et script présents"
 
+echo "🤖 2/4 : Création du keystore PKCS12"
 rm -f compagnie.keystore
 keytool -genkeypair -noprompt \
   -alias compagnie \
@@ -19,7 +23,9 @@ keytool -genkeypair -noprompt \
   -storetype PKCS12 \
   -storepass "azerty123" \
   -keypass "azerty123" >/dev/null 2>&1
+echo "✅ Keystore PKCS12 créé"
 
+echo "🤖 3/4 : Création du preset d'export"
 cat > export_presets.cfg <<'CFG'
 [preset.0]
 name="Android"
@@ -57,6 +63,11 @@ screen/support_large=true
 screen/support_xlarge=true
 textures/etc2=true
 CFG
+echo "✅ Preset prêt"
 
+echo "🤖 4/4 : Compilation de l'APK DEBUG"
 godot --headless --path . --export-debug "Android" Compagnie3D.apk
 test -f Compagnie3D.apk
+echo ""
+echo "🎉🎉🎉 APK GÉNÉRÉ AVEC SUCCÈS ! 🎉🎉🎉"
+ls -lh Compagnie3D.apk
